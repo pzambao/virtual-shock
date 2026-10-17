@@ -386,3 +386,15 @@ body {
   opacity: 0.55;
   pointer-events: none;
 }
+
+.analog-knob {
+  pointer-events: none;
+  z-index: 1;
+}
+
+.thumb-click {
+  border-radius: 12px;
+  font-size: clamp(13px, 2.8vw, 18px);
+  font-weight: 700;
+  background: rgba(12, 16, 28, 0.72);
+}

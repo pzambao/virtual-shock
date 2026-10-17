@@ -108,6 +108,14 @@ describe("parseProtocolMessage", () => {
       ),
       null,
     );
+    const l3 = parseProtocolMessage(
+      serializeMessage({ type: "pad_down", sessionId: "s1", button: "L3" }),
+    );
+    assert.deepEqual(l3, {
+      type: "pad_down",
+      sessionId: "s1",
+      button: "L3",
+    });
   });
 });
 

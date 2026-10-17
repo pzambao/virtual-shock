@@ -41,6 +41,8 @@ interface ViGEmController {
     BACK: ViGEmButton;
     START: ViGEmButton;
     GUIDE: ViGEmButton;
+    LEFT_THUMB: ViGEmButton;
+    RIGHT_THUMB: ViGEmButton;
   };
 }
 
@@ -70,6 +72,8 @@ const FACE_MAP: Partial<Record<PadButton, keyof ViGEmController["button"]>> = {
   Back: "BACK",
   Start: "START",
   Guide: "GUIDE",
+  L3: "LEFT_THUMB",
+  R3: "RIGHT_THUMB",
 };
 
 export class GamepadInputProvider {
