@@ -4,6 +4,7 @@ import {
   KEY_LABELS,
   type AllowedKey,
 } from "@virtual-shock/shared";
+import { AnalogStick } from "./components/AnalogStick";
 import { ControlButton } from "./components/ControlButton";
 import {
   SessionClient,
@@ -50,6 +51,7 @@ export function App() {
   };
 
   const handleDisconnect = () => {
+    clientRef.current?.stickMove("left", 0, 0);
     clientRef.current?.disconnect();
     setPressed({});
   };
@@ -123,6 +125,12 @@ export function App() {
                 />
               ) : null,
             )}
+          </div>
+          <div className="stick-area">
+            <AnalogStick
+              onMove={({ x, y }) => clientRef.current?.stickMove("left", x, y)}
+              onEnd={() => clientRef.current?.stickMove("left", 0, 0)}
+            />
           </div>
         </div>
       )}

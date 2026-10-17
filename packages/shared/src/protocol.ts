@@ -8,6 +8,8 @@ export type SessionStatus =
   | "disconnected"
   | "error";
 
+export type StickId = "left";
+
 export interface HelloMessage {
   type: "hello";
   protocolVersion: typeof PROTOCOL_VERSION;
@@ -32,6 +34,15 @@ export interface KeyUpMessage {
   type: "key_up";
   key: AllowedKey;
   sessionId: string;
+}
+
+/** Analog stick axes in [-1, 1]. +x right, +y up. */
+export interface StickMoveMessage {
+  type: "stick_move";
+  sessionId: string;
+  stick: StickId;
+  x: number;
+  y: number;
 }
 
 export interface SessionStateMessage {
@@ -60,6 +71,7 @@ export type ClientToServerMessage =
   | HelloMessage
   | KeyDownMessage
   | KeyUpMessage
+  | StickMoveMessage
   | PingMessage;
 
 export type ServerToClientMessage =
@@ -72,6 +84,10 @@ export type ProtocolMessage = ClientToServerMessage | ServerToClientMessage;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
+}
+
+function isFiniteAxis(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= -1 && value <= 1;
 }
 
 export function parseProtocolMessage(raw: string): ProtocolMessage | null {
@@ -130,6 +146,23 @@ export function parseProtocolMessage(raw: string): ProtocolMessage | null {
         type: parsed.type,
         key: parsed.key,
         sessionId: parsed.sessionId,
+      };
+    }
+    case "stick_move": {
+      if (
+        typeof parsed.sessionId !== "string" ||
+        parsed.stick !== "left" ||
+        !isFiniteAxis(parsed.x) ||
+        !isFiniteAxis(parsed.y)
+      ) {
+        return null;
+      }
+      return {
+        type: "stick_move",
+        sessionId: parsed.sessionId,
+        stick: "left",
+        x: parsed.x,
+        y: parsed.y,
       };
     }
     case "session_state": {

@@ -8,6 +8,7 @@ import {
   serializeMessage,
   type ClientToServerMessage,
 } from "@virtual-shock/shared";
+import type { GamepadStatus } from "../input/GamepadInputProvider.js";
 import { InputService } from "../input/InputService.js";
 
 export interface HostInfo {
@@ -16,6 +17,7 @@ export interface HostInfo {
   addresses: string[];
   clientConnected: boolean;
   clientName?: string;
+  gamepadStatus: GamepadStatus;
 }
 
 export type HostInfoListener = (info: HostInfo) => void;
@@ -75,7 +77,13 @@ export class SessionServer {
       addresses: this.addresses,
       clientConnected: Boolean(connected),
       clientName: connected?.name,
+      gamepadStatus: this.input.getGamepadStatus(),
     };
+  }
+
+  /** Notify UI listeners after gamepad status changes outside WS events. */
+  notifyInfo(): void {
+    this.emitInfo();
   }
 
   setAddresses(addresses: string[]): void {
@@ -237,6 +245,20 @@ export class SessionServer {
         }
         return;
       }
+      case "stick_move": {
+        if (!session.authenticated || message.sessionId !== session.id) {
+          this.send(session.ws, {
+            type: "error",
+            code: "unauthorized",
+            message: "Sessão inválida",
+          });
+          return;
+        }
+        if (message.stick === "left") {
+          this.input.setLeftStick(message.x, message.y);
+        }
+        return;
+      }
       default: {
         this.send(session.ws, {
           type: "error",
@@ -254,7 +276,9 @@ export class SessionServer {
     }
     if (session.authenticated) {
       this.input.releaseAll();
-      console.log(`[SessionServer] Authenticated client disconnected; keys released`);
+      console.log(
+        `[SessionServer] Authenticated client disconnected; keys/stick released`,
+      );
     }
     this.emitInfo();
   }

@@ -112,3 +112,44 @@ body {
 .control-btn.wide {
   grid-column: span 2;
 }
+
+.stick-area {
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 16px;
+}
+
+.analog-stick {
+  position: relative;
+  width: min(48vw, 200px);
+  height: min(48vw, 200px);
+  border-radius: 50%;
+  border: 2px solid #444;
+  background: #181818;
+}
+
+.analog-stick.disabled {
+  opacity: 0.45;
+}
+
+.analog-knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 42%;
+  height: 42%;
+  border-radius: 50%;
+  background: #2d6cdf;
+  border: 2px solid #5a8ff0;
+}
+
+.analog-label {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  font-size: 12px;
+  opacity: 0.55;
+  pointer-events: none;
+}

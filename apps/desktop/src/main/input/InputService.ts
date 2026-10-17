@@ -1,17 +1,31 @@
 import { KeyStateTracker, type AllowedKey } from "@virtual-shock/shared";
 import type { InputProvider } from "./InputProvider.js";
-import { GamepadInputProvider } from "./GamepadInputProvider.js";
+import {
+  GamepadInputProvider,
+  type GamepadStatus,
+} from "./GamepadInputProvider.js";
 import { KeyboardInputProvider } from "./KeyboardInputProvider.js";
 
 export class InputService {
   private readonly tracker = new KeyStateTracker();
   private readonly keyboard: InputProvider;
-  /** Reserved for a future real virtual gamepad — unused in the MVP. */
-  private readonly gamepad: InputProvider;
+  private readonly gamepad: GamepadInputProvider;
 
-  constructor(keyboard?: InputProvider, gamepad?: InputProvider) {
+  constructor(keyboard?: InputProvider, gamepad?: GamepadInputProvider) {
     this.keyboard = keyboard ?? new KeyboardInputProvider();
     this.gamepad = gamepad ?? new GamepadInputProvider();
+  }
+
+  getGamepad(): GamepadInputProvider {
+    return this.gamepad;
+  }
+
+  getGamepadStatus(): GamepadStatus {
+    return this.gamepad.getStatus();
+  }
+
+  connectGamepad(): boolean {
+    return this.gamepad.connect();
   }
 
   keyDown(key: AllowedKey): void {
@@ -30,21 +44,25 @@ export class InputService {
     this.keyboard.keyUp(key);
   }
 
+  setLeftStick(x: number, y: number): void {
+    this.gamepad.setLeftStick(x, y);
+  }
+
   releaseAll(): void {
     const keys = this.tracker.releaseAll();
-    if (keys.length === 0) {
-      return;
+    if (keys.length > 0) {
+      console.log(`[InputService] Releasing keys: ${keys.join(", ")}`);
+      this.keyboard.releaseAll(keys);
     }
-    console.log(`[InputService] Releasing keys: ${keys.join(", ")}`);
-    this.keyboard.releaseAll(keys);
+    this.gamepad.reset();
   }
 
   getPressed(): AllowedKey[] {
     return this.tracker.getPressed();
   }
 
-  /** Exposes providers for future routing (keyboard vs gamepad). */
-  getProviders(): { keyboard: InputProvider; gamepad: InputProvider } {
-    return { keyboard: this.keyboard, gamepad: this.gamepad };
+  dispose(): void {
+    this.releaseAll();
+    this.gamepad.dispose();
   }
 }

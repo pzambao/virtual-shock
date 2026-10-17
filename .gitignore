@@ -15,3 +15,5 @@ apps/desktop/dist-mobile/
 apps/desktop/release/
 # materialized by prepare-pack for electron-builder
 apps/desktop/node_modules/@virtual-shock/
+# downloaded by scripts/download-vigem.mjs
+apps/desktop/resources/vigem/*.exe

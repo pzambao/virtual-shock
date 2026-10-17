@@ -29,6 +29,18 @@
       </section>
 
       <section class="card">
+        <h2>Gamepad virtual</h2>
+        <p>
+          <span class="label">Estado</span>
+          <strong id="gamepad-status">—</strong>
+        </p>
+        <p id="gamepad-detail" class="hint"></p>
+        <button id="retry-gamepad" type="button">
+          Instalar / reconectar ViGEm
+        </button>
+      </section>
+
+      <section class="card">
         <h2>QR Code</h2>
         <img id="qr" alt="QR Code de conexão" hidden />
         <p id="qr-fallback" class="hint">QR indisponível</p>
@@ -39,7 +51,11 @@
         <ul>
           <li>Celular e PC na mesma Wi‑Fi.</li>
           <li>Libere a porta no firewall do Windows se necessário.</li>
-          <li>Fora do Windows, teclas são apenas logadas (stub).</li>
+          <li>
+            Joystick real usa ViGEmBus (embutido). Na 1ª vez o Windows pede UAC;
+            reinício em geral não é necessário.
+          </li>
+          <li>Fora do Windows, teclado/stick são apenas logados (stub).</li>
         </ul>
       </section>
     </main>
