@@ -11,6 +11,8 @@ export const PAD_BUTTONS = [
   "Back",
   "Start",
   "Guide",
+  "L3",
+  "R3",
   "DpadUp",
   "DpadDown",
   "DpadLeft",

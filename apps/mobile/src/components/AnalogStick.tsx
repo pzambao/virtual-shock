@@ -10,6 +10,10 @@ export interface StickAxes {
 
 interface AnalogStickProps {
   disabled?: boolean;
+  clickLabel?: string;
+  clickPressed?: boolean;
+  onClickDown?: () => void;
+  onClickUp?: () => void;
   onMove: (axes: StickAxes) => void;
   onEnd: () => void;
 }
@@ -31,9 +35,18 @@ function applyDeadzone(x: number, y: number): StickAxes {
   };
 }
 
-export function AnalogStick({ disabled, onMove, onEnd }: AnalogStickProps) {
+export function AnalogStick({
+  disabled,
+  clickLabel,
+  clickPressed,
+  onClickDown,
+  onClickUp,
+  onMove,
+  onEnd,
+}: AnalogStickProps) {
   const areaRef = useRef<HTMLDivElement | null>(null);
   const pointerIdRef = useRef<number | null>(null);
+  const clickHeldRef = useRef(false);
   const lastSentRef = useRef(0);
   const pendingRef = useRef<StickAxes | null>(null);
   const [knob, setKnob] = useState({ x: 0, y: 0 });
@@ -129,6 +142,51 @@ export function AnalogStick({ disabled, onMove, onEnd }: AnalogStickProps) {
           transform: `translate(calc(-50% + ${knob.x * 36}%), calc(-50% + ${-knob.y * 36}%))`,
         }}
       />
+      {clickLabel ? (
+        <button
+          type="button"
+          className={`stick-click${clickPressed ? " pressed" : ""}`}
+          aria-label={`Clique do analógico ${clickLabel}`}
+          onContextMenu={(e) => e.preventDefault()}
+          onPointerDown={(e) => {
+            if (disabled || clickHeldRef.current) {
+              return;
+            }
+            e.preventDefault();
+            e.stopPropagation();
+            e.currentTarget.setPointerCapture(e.pointerId);
+            clickHeldRef.current = true;
+            onClickDown?.();
+          }}
+          onPointerUp={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (!clickHeldRef.current) {
+              return;
+            }
+            clickHeldRef.current = false;
+            onClickUp?.();
+          }}
+          onPointerCancel={(e) => {
+            e.stopPropagation();
+            if (!clickHeldRef.current) {
+              return;
+            }
+            clickHeldRef.current = false;
+            onClickUp?.();
+          }}
+          onLostPointerCapture={(e) => {
+            e.stopPropagation();
+            if (!clickHeldRef.current) {
+              return;
+            }
+            clickHeldRef.current = false;
+            onClickUp?.();
+          }}
+        >
+          {clickLabel}
+        </button>
+      ) : null}
     </div>
   );
 }
