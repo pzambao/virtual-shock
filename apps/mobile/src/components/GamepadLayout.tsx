@@ -338,6 +338,38 @@ export function GamepadLayout({
             />
           </div>
         </DraggableControl>
+
+        <DraggableControl
+          id="l3"
+          rect={layout.l3}
+          editMode={editMode}
+          label="L3"
+          onChange={updateRect}
+        >
+          <PadButton
+            id="L3"
+            className="thumb-click fill"
+            pressed={Boolean(pressed.L3)}
+            onDown={playDown}
+            onUp={playUp}
+          />
+        </DraggableControl>
+
+        <DraggableControl
+          id="r3"
+          rect={layout.r3}
+          editMode={editMode}
+          label="R3"
+          onChange={updateRect}
+        >
+          <PadButton
+            id="R3"
+            className="thumb-click fill"
+            pressed={Boolean(pressed.R3)}
+            onDown={playDown}
+            onUp={playUp}
+          />
+        </DraggableControl>
       </div>
     </div>
   );
