@@ -1,3 +1,4 @@
+import { isPadButton, isStickId, type PadButton, type StickId } from "./gamepad.js";
 import { isAllowedKey, type AllowedKey } from "./keys.js";
 
 export const PROTOCOL_VERSION = 1 as const;
@@ -7,8 +8,6 @@ export type SessionStatus =
   | "rejected"
   | "disconnected"
   | "error";
-
-export type StickId = "left";
 
 export interface HelloMessage {
   type: "hello";
@@ -45,6 +44,18 @@ export interface StickMoveMessage {
   y: number;
 }
 
+export interface PadDownMessage {
+  type: "pad_down";
+  sessionId: string;
+  button: PadButton;
+}
+
+export interface PadUpMessage {
+  type: "pad_up";
+  sessionId: string;
+  button: PadButton;
+}
+
 export interface SessionStateMessage {
   type: "session_state";
   status: SessionStatus;
@@ -72,6 +83,8 @@ export type ClientToServerMessage =
   | KeyDownMessage
   | KeyUpMessage
   | StickMoveMessage
+  | PadDownMessage
+  | PadUpMessage
   | PingMessage;
 
 export type ServerToClientMessage =
@@ -87,7 +100,12 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function isFiniteAxis(value: unknown): value is number {
-  return typeof value === "number" && Number.isFinite(value) && value >= -1 && value <= 1;
+  return (
+    typeof value === "number" &&
+    Number.isFinite(value) &&
+    value >= -1 &&
+    value <= 1
+  );
 }
 
 export function parseProtocolMessage(raw: string): ProtocolMessage | null {
@@ -151,7 +169,8 @@ export function parseProtocolMessage(raw: string): ProtocolMessage | null {
     case "stick_move": {
       if (
         typeof parsed.sessionId !== "string" ||
-        parsed.stick !== "left" ||
+        typeof parsed.stick !== "string" ||
+        !isStickId(parsed.stick) ||
         !isFiniteAxis(parsed.x) ||
         !isFiniteAxis(parsed.y)
       ) {
@@ -160,9 +179,24 @@ export function parseProtocolMessage(raw: string): ProtocolMessage | null {
       return {
         type: "stick_move",
         sessionId: parsed.sessionId,
-        stick: "left",
+        stick: parsed.stick,
         x: parsed.x,
         y: parsed.y,
+      };
+    }
+    case "pad_down":
+    case "pad_up": {
+      if (
+        typeof parsed.sessionId !== "string" ||
+        typeof parsed.button !== "string" ||
+        !isPadButton(parsed.button)
+      ) {
+        return null;
+      }
+      return {
+        type: parsed.type,
+        sessionId: parsed.sessionId,
+        button: parsed.button,
       };
     }
     case "session_state": {

@@ -1,7 +1,3 @@
-/**
- * Downloads the official ViGEmBus redistributable into resources/vigem/.
- * MIT-licensed (Nefarius). Required for packaging and first-run auto-install.
- */
 import { createWriteStream, existsSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";

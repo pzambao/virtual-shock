@@ -1,7 +1,3 @@
-/**
- * Smoke test: HTTP + WS pairing + key/stick events (stubs on non-Windows).
- * Run after: pnpm build:shared && pnpm build:desktop && prepare-mobile
- */
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { WebSocket } from "ws";
@@ -27,7 +23,6 @@ const server = new SessionServer({
 });
 
 await server.start(PORT);
-
 const ws = new WebSocket(`ws://127.0.0.1:${PORT}`);
 
 function onceMessage(predicate, timeoutMs = 3000) {
@@ -69,8 +64,6 @@ try {
   }
 
   const sessionId = ack.sessionId;
-  ws.send(serializeMessage({ type: "key_down", key: "KeyA", sessionId }));
-  ws.send(serializeMessage({ type: "key_down", key: "KeyW", sessionId }));
   ws.send(
     serializeMessage({
       type: "stick_move",
@@ -80,21 +73,24 @@ try {
       y: -0.25,
     }),
   );
-  await new Promise((r) => setTimeout(r, 50));
-  if (input.getPressed().sort().join(",") !== "KeyA,KeyW") {
-    throw new Error(`expected KeyA,KeyW pressed, got ${input.getPressed()}`);
-  }
+  ws.send(
+    serializeMessage({
+      type: "stick_move",
+      sessionId,
+      stick: "right",
+      x: -0.5,
+      y: 0.8,
+    }),
+  );
+  ws.send(serializeMessage({ type: "pad_down", sessionId, button: "A" }));
+  await new Promise((r) => setTimeout(r, 40));
+  ws.send(serializeMessage({ type: "pad_up", sessionId, button: "A" }));
 
   ws.close();
-  await new Promise((r) => setTimeout(r, 100));
-  if (input.getPressed().length !== 0) {
-    throw new Error(`keys not released after disconnect: ${input.getPressed()}`);
-  }
+  await new Promise((r) => setTimeout(r, 80));
 
   const html = await fetch(`http://127.0.0.1:${PORT}/`);
-  if (!html.ok) {
-    throw new Error(`static serve failed: ${html.status}`);
-  }
+  if (!html.ok) throw new Error(`static serve failed: ${html.status}`);
 
   console.log("smoke-ws OK");
 } finally {

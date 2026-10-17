@@ -12,13 +12,10 @@ export const VIGEM_SETUP_FILENAME = "ViGEmBus_1.22.0_x64_x86_arm64.exe";
 export function resolveVigemSetupPath(): string | null {
   const here = dirname(fileURLToPath(import.meta.url));
   const candidates = [
-    // Packaged: resources/vigem/...
     join(process.resourcesPath ?? "", "vigem", VIGEM_SETUP_FILENAME),
-    // Dev: apps/desktop/resources/vigem/... (from dist/main/vigem)
     join(here, "../../../resources/vigem", VIGEM_SETUP_FILENAME),
     join(app.getAppPath(), "resources", "vigem", VIGEM_SETUP_FILENAME),
   ];
-
   for (const candidate of candidates) {
     if (existsSync(candidate)) {
       return candidate;
@@ -27,10 +24,6 @@ export function resolveVigemSetupPath(): string | null {
   return null;
 }
 
-/**
- * Launch the bundled ViGEmBus setup elevated (UAC).
- * Uses quiet install; reboot is typically not required.
- */
 export async function installVigemBusElevated(
   setupPath: string,
 ): Promise<{ ok: boolean; code: number | null; error?: string }> {

@@ -81,7 +81,6 @@ export class SessionServer {
     };
   }
 
-  /** Notify UI listeners after gamepad status changes outside WS events. */
   notifyInfo(): void {
     this.emitInfo();
   }
@@ -254,8 +253,23 @@ export class SessionServer {
           });
           return;
         }
-        if (message.stick === "left") {
-          this.input.setLeftStick(message.x, message.y);
+        this.input.setStick(message.stick, message.x, message.y);
+        return;
+      }
+      case "pad_down":
+      case "pad_up": {
+        if (!session.authenticated || message.sessionId !== session.id) {
+          this.send(session.ws, {
+            type: "error",
+            code: "unauthorized",
+            message: "Sessão inválida",
+          });
+          return;
+        }
+        if (message.type === "pad_down") {
+          this.input.padDown(message.button);
+        } else {
+          this.input.padUp(message.button);
         }
         return;
       }
@@ -277,7 +291,7 @@ export class SessionServer {
     if (session.authenticated) {
       this.input.releaseAll();
       console.log(
-        `[SessionServer] Authenticated client disconnected; keys/stick released`,
+        `[SessionServer] Authenticated client disconnected; keys/pad released`,
       );
     }
     this.emitInfo();

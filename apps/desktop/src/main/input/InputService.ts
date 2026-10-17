@@ -1,4 +1,9 @@
-import { KeyStateTracker, type AllowedKey } from "@virtual-shock/shared";
+import {
+  KeyStateTracker,
+  type AllowedKey,
+  type PadButton,
+  type StickId,
+} from "@virtual-shock/shared";
 import type { InputProvider } from "./InputProvider.js";
 import {
   GamepadInputProvider,
@@ -44,8 +49,16 @@ export class InputService {
     this.keyboard.keyUp(key);
   }
 
-  setLeftStick(x: number, y: number): void {
-    this.gamepad.setLeftStick(x, y);
+  setStick(stick: StickId, x: number, y: number): void {
+    this.gamepad.setStick(stick, x, y);
+  }
+
+  padDown(button: PadButton): void {
+    this.gamepad.setButton(button, true);
+  }
+
+  padUp(button: PadButton): void {
+    this.gamepad.setButton(button, false);
   }
 
   releaseAll(): void {
