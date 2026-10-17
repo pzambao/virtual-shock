@@ -25,7 +25,8 @@
     "onlyBuiltDependencies": [
       "electron",
       "esbuild",
-      "koffi"
+      "koffi",
+      "vigemclient"
     ]
   }
 }

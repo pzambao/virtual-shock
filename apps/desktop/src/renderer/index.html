@@ -22,10 +22,22 @@
         <p><span class="label">Porta</span> <strong id="port">—</strong></p>
         <p><span class="label">IPs</span> <strong id="ips">—</strong></p>
         <p class="hint">
-          No celular, abra <code id="url">http://IP:porta/</code> e digite o
-          código.
+          No celular (landscape), abra <code id="url">http://IP:porta/</code> e
+          digite o código.
         </p>
         <button id="rotate" type="button">Gerar novo código</button>
+      </section>
+
+      <section class="card">
+        <h2>Gamepad virtual</h2>
+        <p>
+          <span class="label">Estado</span>
+          <strong id="gamepad-status">—</strong>
+        </p>
+        <p id="gamepad-detail" class="hint"></p>
+        <button id="retry-gamepad" type="button">
+          Instalar / reconectar ViGEm
+        </button>
       </section>
 
       <section class="card">
@@ -37,9 +49,9 @@
       <section class="card notes">
         <h2>Notas</h2>
         <ul>
-          <li>Celular e PC na mesma Wi‑Fi.</li>
-          <li>Libere a porta no firewall do Windows se necessário.</li>
-          <li>Fora do Windows, teclas são apenas logadas (stub).</li>
+          <li>Celular e PC na mesma Wi‑Fi; use o celular na horizontal.</li>
+          <li>Joystick/botões usam ViGEmBus (Xbox 360 virtual).</li>
+          <li>Na 1ª vez o Windows pode pedir UAC; reinício em geral não é preciso.</li>
         </ul>
       </section>
     </main>

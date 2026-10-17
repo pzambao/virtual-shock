@@ -5,6 +5,8 @@ import {
   type ClientToServerMessage,
   type ServerToClientMessage,
   type AllowedKey,
+  type PadButton,
+  type StickId,
 } from "@virtual-shock/shared";
 
 export type ConnectionStatus =
@@ -69,8 +71,6 @@ export class SessionClient {
           this.options.onStatus("rejected", message.reason ?? "rejected");
           ws.close();
         }
-      } else if (message.type === "pong") {
-        // heartbeat ok
       } else if (message.type === "session_state") {
         this.options.onStatus(
           message.status === "connected" ? "connected" : message.status,
@@ -108,17 +108,34 @@ export class SessionClient {
   }
 
   keyDown(key: AllowedKey): void {
-    if (!this.sessionId) {
-      return;
-    }
+    if (!this.sessionId) return;
     this.send({ type: "key_down", key, sessionId: this.sessionId });
   }
 
   keyUp(key: AllowedKey): void {
-    if (!this.sessionId) {
-      return;
-    }
+    if (!this.sessionId) return;
     this.send({ type: "key_up", key, sessionId: this.sessionId });
+  }
+
+  stickMove(stick: StickId, x: number, y: number): void {
+    if (!this.sessionId) return;
+    this.send({
+      type: "stick_move",
+      sessionId: this.sessionId,
+      stick,
+      x,
+      y,
+    });
+  }
+
+  padDown(button: PadButton): void {
+    if (!this.sessionId) return;
+    this.send({ type: "pad_down", sessionId: this.sessionId, button });
+  }
+
+  padUp(button: PadButton): void {
+    if (!this.sessionId) return;
+    this.send({ type: "pad_up", sessionId: this.sessionId, button });
   }
 
   private send(message: ClientToServerMessage): void {
@@ -166,11 +183,9 @@ export function defaultHostFromLocation(): string {
   if (fromQuery) {
     return fromQuery;
   }
-  // Vite dev server is not the WebSocket host — Electron listens on 8787.
   if (window.location.port === "5173") {
     return `${window.location.hostname}:8787`;
   }
-  // When served by Electron HTTP, same host/port works for WS.
   if (window.location.port) {
     return window.location.host;
   }

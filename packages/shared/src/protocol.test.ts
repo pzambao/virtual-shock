@@ -62,4 +62,60 @@ describe("parseProtocolMessage", () => {
     );
     assert.deepEqual(ping, { type: "ping", ts: 42 });
   });
+
+  it("parses stick_move for left and right", () => {
+    const left = parseProtocolMessage(
+      serializeMessage({
+        type: "stick_move",
+        sessionId: "s1",
+        stick: "left",
+        x: 0.5,
+        y: -0.25,
+      }),
+    );
+    assert.deepEqual(left, {
+      type: "stick_move",
+      sessionId: "s1",
+      stick: "left",
+      x: 0.5,
+      y: -0.25,
+    });
+
+    const right = parseProtocolMessage(
+      serializeMessage({
+        type: "stick_move",
+        sessionId: "s1",
+        stick: "right",
+        x: -1,
+        y: 1,
+      }),
+    );
+    assert.equal(right && right.type === "stick_move" && right.stick, "right");
+  });
+
+  it("parses pad_down / pad_up", () => {
+    const down = parseProtocolMessage(
+      serializeMessage({ type: "pad_down", sessionId: "s1", button: "A" }),
+    );
+    assert.deepEqual(down, {
+      type: "pad_down",
+      sessionId: "s1",
+      button: "A",
+    });
+    assert.equal(
+      parseProtocolMessage(
+        JSON.stringify({ type: "pad_down", sessionId: "s1", button: "Z" }),
+      ),
+      null,
+    );
+    const l3 = parseProtocolMessage(
+      serializeMessage({ type: "pad_down", sessionId: "s1", button: "L3" }),
+    );
+    assert.deepEqual(l3, {
+      type: "pad_down",
+      sessionId: "s1",
+      button: "L3",
+    });
+  });
 });
+

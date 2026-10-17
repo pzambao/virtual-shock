@@ -8,6 +8,7 @@ import {
   serializeMessage,
   type ClientToServerMessage,
 } from "@virtual-shock/shared";
+import type { GamepadStatus } from "../input/GamepadInputProvider.js";
 import { InputService } from "../input/InputService.js";
 
 export interface HostInfo {
@@ -16,6 +17,7 @@ export interface HostInfo {
   addresses: string[];
   clientConnected: boolean;
   clientName?: string;
+  gamepadStatus: GamepadStatus;
 }
 
 export type HostInfoListener = (info: HostInfo) => void;
@@ -75,7 +77,12 @@ export class SessionServer {
       addresses: this.addresses,
       clientConnected: Boolean(connected),
       clientName: connected?.name,
+      gamepadStatus: this.input.getGamepadStatus(),
     };
+  }
+
+  notifyInfo(): void {
+    this.emitInfo();
   }
 
   setAddresses(addresses: string[]): void {
@@ -237,6 +244,35 @@ export class SessionServer {
         }
         return;
       }
+      case "stick_move": {
+        if (!session.authenticated || message.sessionId !== session.id) {
+          this.send(session.ws, {
+            type: "error",
+            code: "unauthorized",
+            message: "Sessão inválida",
+          });
+          return;
+        }
+        this.input.setStick(message.stick, message.x, message.y);
+        return;
+      }
+      case "pad_down":
+      case "pad_up": {
+        if (!session.authenticated || message.sessionId !== session.id) {
+          this.send(session.ws, {
+            type: "error",
+            code: "unauthorized",
+            message: "Sessão inválida",
+          });
+          return;
+        }
+        if (message.type === "pad_down") {
+          this.input.padDown(message.button);
+        } else {
+          this.input.padUp(message.button);
+        }
+        return;
+      }
       default: {
         this.send(session.ws, {
           type: "error",
@@ -254,7 +290,9 @@ export class SessionServer {
     }
     if (session.authenticated) {
       this.input.releaseAll();
-      console.log(`[SessionServer] Authenticated client disconnected; keys released`);
+      console.log(
+        `[SessionServer] Authenticated client disconnected; keys/pad released`,
+      );
     }
     this.emitInfo();
   }
