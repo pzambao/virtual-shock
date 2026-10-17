@@ -392,29 +392,9 @@ body {
   z-index: 1;
 }
 
-.stick-click {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 2;
-  width: 46%;
-  height: 46%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  border: 1.5px solid #d5d5d5;
-  background: rgba(12, 16, 28, 0.72);
-  color: #f4f4f4;
-  font-size: clamp(10px, 2.4vw, 14px);
+.thumb-click {
+  border-radius: 12px;
+  font-size: clamp(13px, 2.8vw, 18px);
   font-weight: 700;
-  padding: 0;
-  touch-action: none;
-}
-
-.stick-click.pressed {
-  background: rgba(120, 150, 255, 0.55);
-  border-color: #9eb0ff;
-}
-
-.analog-stick.disabled .stick-click {
-  pointer-events: none;
+  background: rgba(12, 16, 28, 0.72);
 }

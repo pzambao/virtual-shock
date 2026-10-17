@@ -7,6 +7,8 @@ export type PadControlId =
   | "face"
   | "stickLeft"
   | "stickRight"
+  | "l3"
+  | "r3"
   | "guideTop"
   | "guideBottom"
   | "back"
@@ -35,6 +37,7 @@ export const DEFAULT_PAD_LAYOUT: PadLayoutMap = {
   lb: { x: 12, y: 5, w: 9, h: 8 },
   dpad: { x: 6, y: 20, w: 14, h: 14 },
   stickLeft: { x: 16, y: 58, w: 13, h: 13 },
+  l3: { x: 0, y: 88, w: 12, h: 12 },
   guideTop: { x: 47, y: 4, w: 5, h: 5 },
   back: { x: 30, y: 28, w: 4, h: 18 },
   touchpad: { x: 35, y: 22, w: 30, h: 36 },
@@ -44,6 +47,7 @@ export const DEFAULT_PAD_LAYOUT: PadLayoutMap = {
   rt: { x: 89, y: 3, w: 9, h: 8 },
   face: { x: 80, y: 20, w: 14, h: 14 },
   stickRight: { x: 71, y: 58, w: 13, h: 13 },
+  r3: { x: 88, y: 88, w: 12, h: 12 },
 };
 
 /** Kept visually square via width% + aspect-ratio (not height%). */

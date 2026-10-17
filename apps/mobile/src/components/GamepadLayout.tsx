@@ -167,10 +167,6 @@ export function GamepadLayout({
           <div className="stick-fill">
             <AnalogStick
               disabled={editMode}
-              clickLabel="L3"
-              clickPressed={Boolean(pressed.L3)}
-              onClickDown={() => playDown("L3")}
-              onClickUp={() => playUp("L3")}
               onMove={({ x, y }) => onStickMove("left", x, y)}
               onEnd={() => onStickEnd("left")}
             />
@@ -337,14 +333,42 @@ export function GamepadLayout({
           <div className="stick-fill">
             <AnalogStick
               disabled={editMode}
-              clickLabel="R3"
-              clickPressed={Boolean(pressed.R3)}
-              onClickDown={() => playDown("R3")}
-              onClickUp={() => playUp("R3")}
               onMove={({ x, y }) => onStickMove("right", x, y)}
               onEnd={() => onStickEnd("right")}
             />
           </div>
+        </DraggableControl>
+
+        <DraggableControl
+          id="l3"
+          rect={layout.l3}
+          editMode={editMode}
+          label="L3"
+          onChange={updateRect}
+        >
+          <PadButton
+            id="L3"
+            className="thumb-click fill"
+            pressed={Boolean(pressed.L3)}
+            onDown={playDown}
+            onUp={playUp}
+          />
+        </DraggableControl>
+
+        <DraggableControl
+          id="r3"
+          rect={layout.r3}
+          editMode={editMode}
+          label="R3"
+          onChange={updateRect}
+        >
+          <PadButton
+            id="R3"
+            className="thumb-click fill"
+            pressed={Boolean(pressed.R3)}
+            onDown={playDown}
+            onUp={playUp}
+          />
         </DraggableControl>
       </div>
     </div>
