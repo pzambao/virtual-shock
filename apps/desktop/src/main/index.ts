@@ -46,14 +46,6 @@ function resolveRenderer(): string {
   return join(__dirname, "../renderer/index.html");
 }
 
-function pushHostUpdate(): void {
-  if (!sessionServer) {
-    return;
-  }
-  latestInfo = sessionServer.getInfo();
-  void refreshQr(latestInfo);
-}
-
 async function refreshQr(info: HostInfo): Promise<void> {
   const primary = info.addresses[0] ?? "127.0.0.1";
   const url = `http://${primary}:${info.port}/`;
@@ -87,7 +79,7 @@ async function ensureGamepad(input: InputService): Promise<void> {
   const setupPath = resolveVigemSetupPath();
   if (!setupPath) {
     gamepadDetail =
-      "ViGEmBus ausente — rode pnpm --filter @virtual-shock/desktop download-vigem";
+      "ViGEmBus ausente — rode: pnpm --filter @virtual-shock/desktop download-vigem";
     console.warn("[main]", gamepadDetail);
     return;
   }
@@ -95,7 +87,6 @@ async function ensureGamepad(input: InputService): Promise<void> {
   input.getGamepad().setStatus("installing");
   gamepadDetail = "Instalando ViGEmBus (aceite o UAC)...";
   sessionServer?.notifyInfo();
-  pushHostUpdate();
 
   const result = await installVigemBusElevated(setupPath);
   if (!result.ok) {
@@ -103,28 +94,24 @@ async function ensureGamepad(input: InputService): Promise<void> {
     gamepadDetail = result.error ?? "Falha ao instalar ViGEmBus";
     console.warn("[main] ViGEm install failed:", gamepadDetail);
     sessionServer?.notifyInfo();
-    pushHostUpdate();
     return;
   }
 
-  // Give the driver a moment to come online.
   await new Promise((r) => setTimeout(r, 1500));
-
   if (input.connectGamepad()) {
     gamepadDetail = "Xbox 360 virtual ativo (ViGEmBus instalado)";
   } else {
     gamepadDetail =
-      "ViGEmBus instalado, mas o pad não conectou — tente reiniciar o app";
+      "ViGEmBus instalado, mas o pad não conectou — reinicie o app";
     input.getGamepad().setStatus("unavailable");
   }
   sessionServer?.notifyInfo();
-  pushHostUpdate();
 }
 
 async function createWindow(): Promise<void> {
   mainWindow = new BrowserWindow({
-    width: 480,
-    height: 700,
+    width: 520,
+    height: 720,
     title: "Virtual Shock",
     webPreferences: {
       preload: resolvePreload(),

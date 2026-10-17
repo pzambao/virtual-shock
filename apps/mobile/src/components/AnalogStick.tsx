@@ -23,7 +23,6 @@ function applyDeadzone(x: number, y: number): StickAxes {
   if (magnitude < DEADZONE) {
     return { x: 0, y: 0 };
   }
-  // Rescale so values outside deadzone map smoothly to full range.
   const scaled = (magnitude - DEADZONE) / (1 - DEADZONE);
   const factor = scaled / magnitude;
   return {
@@ -69,7 +68,6 @@ export function AnalogStick({ disabled, onMove, onEnd }: AnalogStickProps) {
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     let dx = (clientX - centerX) / radius;
-    // Invert Y so finger up => +y (gamepad convention).
     let dy = (centerY - clientY) / radius;
     const mag = Math.hypot(dx, dy);
     if (mag > 1) {
@@ -128,10 +126,9 @@ export function AnalogStick({ disabled, onMove, onEnd }: AnalogStickProps) {
       <div
         className="analog-knob"
         style={{
-          transform: `translate(calc(-50% + ${knob.x * 40}%), calc(-50% + ${-knob.y * 40}%))`,
+          transform: `translate(calc(-50% + ${knob.x * 36}%), calc(-50% + ${-knob.y * 36}%))`,
         }}
       />
-      <span className="analog-label">Stick</span>
     </div>
   );
 }

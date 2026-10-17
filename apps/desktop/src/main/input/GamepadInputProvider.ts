@@ -1,4 +1,5 @@
 import { createRequire } from "node:module";
+import type { PadButton, StickId } from "@virtual-shock/shared";
 
 export type GamepadStatus =
   | "active"
@@ -12,6 +13,10 @@ interface ViGEmAxis {
   reset(): void;
 }
 
+interface ViGEmButton {
+  setValue(value: boolean): void;
+}
+
 interface ViGEmController {
   connect(opts?: Record<string, unknown>): Error | null;
   disconnect(): Error | null;
@@ -19,6 +24,23 @@ interface ViGEmController {
   axis: {
     leftX: ViGEmAxis;
     leftY: ViGEmAxis;
+    rightX: ViGEmAxis;
+    rightY: ViGEmAxis;
+    leftTrigger: ViGEmAxis;
+    rightTrigger: ViGEmAxis;
+    dpadHorz: ViGEmAxis;
+    dpadVert: ViGEmAxis;
+  };
+  button: {
+    A: ViGEmButton;
+    B: ViGEmButton;
+    X: ViGEmButton;
+    Y: ViGEmButton;
+    LEFT_SHOULDER: ViGEmButton;
+    RIGHT_SHOULDER: ViGEmButton;
+    BACK: ViGEmButton;
+    START: ViGEmButton;
+    GUIDE: ViGEmButton;
   };
 }
 
@@ -38,10 +60,28 @@ function clampAxis(value: number): number {
   return Math.min(1, Math.max(-1, value));
 }
 
+const FACE_MAP: Partial<Record<PadButton, keyof ViGEmController["button"]>> = {
+  A: "A",
+  B: "B",
+  X: "X",
+  Y: "Y",
+  LB: "LEFT_SHOULDER",
+  RB: "RIGHT_SHOULDER",
+  Back: "BACK",
+  Start: "START",
+  Guide: "GUIDE",
+};
+
 export class GamepadInputProvider {
   readonly kind = "gamepad" as const;
   private status: GamepadStatus;
   private controller: ViGEmController | null = null;
+  private readonly dpad = {
+    up: false,
+    down: false,
+    left: false,
+    right: false,
+  };
 
   constructor() {
     this.status = process.platform === "win32" ? "unavailable" : "stub";
@@ -55,10 +95,6 @@ export class GamepadInputProvider {
     this.status = status;
   }
 
-  /**
-   * Connect to ViGEmBus and plug in a virtual Xbox 360 pad.
-   * On non-Windows platforms, uses a log stub and returns true.
-   */
   connect(): boolean {
     if (process.platform !== "win32") {
       this.status = "stub";
@@ -112,28 +148,90 @@ export class GamepadInputProvider {
     }
   }
 
-  setLeftStick(x: number, y: number): void {
+  setStick(stick: StickId, x: number, y: number): void {
     const nx = clampAxis(x);
     const ny = clampAxis(y);
 
     if (this.status === "stub") {
       console.log(
-        `[GamepadInputProvider:stub] left stick x=${nx.toFixed(3)} y=${ny.toFixed(3)}`,
+        `[GamepadInputProvider:stub] ${stick} stick x=${nx.toFixed(3)} y=${ny.toFixed(3)}`,
       );
       return;
     }
-
     if (!this.controller || this.status !== "active") {
       return;
     }
 
-    this.controller.axis.leftX.setValue(nx);
-    this.controller.axis.leftY.setValue(ny);
+    if (stick === "left") {
+      this.controller.axis.leftX.setValue(nx);
+      this.controller.axis.leftY.setValue(ny);
+    } else {
+      this.controller.axis.rightX.setValue(nx);
+      this.controller.axis.rightY.setValue(ny);
+    }
+  }
+
+  setButton(button: PadButton, pressed: boolean): void {
+    if (this.status === "stub") {
+      console.log(
+        `[GamepadInputProvider:stub] ${button} ${pressed ? "DOWN" : "UP"}`,
+      );
+      return;
+    }
+    if (!this.controller || this.status !== "active") {
+      return;
+    }
+
+    if (button === "LT") {
+      this.controller.axis.leftTrigger.setValue(pressed ? 1 : 0);
+      return;
+    }
+    if (button === "RT") {
+      this.controller.axis.rightTrigger.setValue(pressed ? 1 : 0);
+      return;
+    }
+
+    if (
+      button === "DpadUp" ||
+      button === "DpadDown" ||
+      button === "DpadLeft" ||
+      button === "DpadRight"
+    ) {
+      if (button === "DpadUp") this.dpad.up = pressed;
+      if (button === "DpadDown") this.dpad.down = pressed;
+      if (button === "DpadLeft") this.dpad.left = pressed;
+      if (button === "DpadRight") this.dpad.right = pressed;
+      this.applyDpad();
+      return;
+    }
+
+    const mapped = FACE_MAP[button];
+    if (mapped) {
+      this.controller.button[mapped].setValue(pressed);
+    }
+  }
+
+  private applyDpad(): void {
+    if (!this.controller) {
+      return;
+    }
+    let vert = 0;
+    if (this.dpad.up) vert += 1;
+    if (this.dpad.down) vert -= 1;
+    let horz = 0;
+    if (this.dpad.right) horz += 1;
+    if (this.dpad.left) horz -= 1;
+    this.controller.axis.dpadVert.setValue(vert);
+    this.controller.axis.dpadHorz.setValue(horz);
   }
 
   reset(): void {
+    this.dpad.up = false;
+    this.dpad.down = false;
+    this.dpad.left = false;
+    this.dpad.right = false;
     if (this.status === "stub") {
-      console.log("[GamepadInputProvider:stub] reset stick");
+      console.log("[GamepadInputProvider:stub] reset");
       return;
     }
     if (!this.controller || this.status !== "active") {

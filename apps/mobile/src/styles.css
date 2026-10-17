@@ -10,9 +10,10 @@ body,
 #root {
   margin: 0;
   height: 100%;
-  background: #111;
+  width: 100%;
+  background: #1a1a1a;
   color: #eee;
-  font-family: system-ui, sans-serif;
+  font-family: system-ui, -apple-system, sans-serif;
 }
 
 body {
@@ -20,23 +21,39 @@ body {
 }
 
 .app {
-  min-height: 100%;
+  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  padding: 12px;
-  gap: 12px;
+  overflow: hidden;
 }
 
-.status {
-  font-size: 14px;
-  opacity: 0.85;
+.app-playing {
+  height: 100dvh;
+  max-height: 100dvh;
+}
+
+.status-bar {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  font-size: 12px;
+  opacity: 0.75;
+  background: #111;
+}
+
+.connect-screen {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
 }
 
 .connect-form {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-width: 360px;
+  width: min(360px, 100%);
 }
 
 .connect-form label {
@@ -51,24 +68,18 @@ body {
   font-size: 16px;
   border: 1px solid #444;
   border-radius: 6px;
-  background: #1a1a1a;
+  background: #222;
   color: #fff;
   touch-action: manipulation;
 }
 
-.connect-form button,
-.secondary-btn {
+.connect-form button {
   padding: 12px;
   font-size: 16px;
   border: none;
   border-radius: 6px;
-  background: #2d6cdf;
+  background: #5b7cfa;
   color: #fff;
-  cursor: pointer;
-}
-
-.secondary-btn {
-  background: #333;
 }
 
 .error {
@@ -76,41 +87,263 @@ body {
   font-size: 13px;
 }
 
-.controller {
+/* ——— Customizable absolute canvas ——— */
+
+.gamepad-shell {
   flex: 1;
+  min-height: 0;
+  height: 100%;
+  max-height: 100dvh;
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  padding: 0;
+  overflow: hidden;
 }
 
-.button-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+.pad-toolbar {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 20;
+}
+
+.toolbar-btn {
+  padding: 5px 10px;
+  font-size: 11px;
+  border: 1px solid #555;
+  border-radius: 999px;
+  background: #2a2a2a;
+  color: #eee;
+}
+
+.toolbar-btn.active {
+  background: #5b7cfa;
+  border-color: #5b7cfa;
+}
+
+.toolbar-btn.ghost {
+  margin-left: auto;
+  background: transparent;
+}
+
+.edit-hint {
+  margin: 0;
+  padding: 4px 10px;
+  font-size: 11px;
+  opacity: 0.7;
+  background: rgba(91, 124, 250, 0.15);
+}
+
+.gamepad-canvas {
+  position: relative;
   flex: 1;
-  align-content: start;
+  min-height: 0;
+  width: 100%;
 }
 
-.control-btn {
-  min-height: 72px;
-  border: 1px solid #444;
-  border-radius: 10px;
-  background: #1c1c1c;
-  color: #fff;
-  font-size: 18px;
+.pad-control {
+  position: absolute;
+  z-index: 1;
+}
+
+.pad-control.editing {
+  z-index: 2;
+  outline: 1px dashed rgba(158, 176, 255, 0.7);
+  outline-offset: 2px;
+  border-radius: 8px;
+  background: rgba(91, 124, 250, 0.08);
+}
+
+.edit-label {
+  position: absolute;
+  top: -14px;
+  left: 0;
+  font-size: 9px;
+  opacity: 0.8;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.pad-control-body {
+  width: 100%;
+  height: 100%;
+}
+
+.pad-control-body.inert-play {
+  pointer-events: none;
+}
+
+.resize-handle {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1px solid #c4ceff;
+  background: #5b7cfa;
+  padding: 0;
+  z-index: 3;
+  touch-action: none;
+}
+
+.pad-btn {
+  border: 1.5px solid #c8c8c8;
+  background: transparent;
+  color: #f0f0f0;
+  font-size: 14px;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.control-btn.pressed {
-  background: #2d6cdf;
-  border-color: #2d6cdf;
+.pad-btn.pressed {
+  background: rgba(120, 150, 255, 0.35);
+  border-color: #9eb0ff;
 }
 
-.control-btn.wide {
-  grid-column: span 2;
+.pad-btn.fill,
+.shoulder.fill,
+.logo-btn.fill,
+.pill-v.fill {
+  width: 100%;
+  height: 100%;
+}
+
+.shoulder {
+  border-radius: 999px;
+  font-size: clamp(10px, 2.2vh, 14px);
+}
+
+.logo-btn {
+  border-radius: 50%;
+  font-size: clamp(12px, 2.8vh, 18px);
+}
+
+.pill-v {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  border-radius: 999px;
+  font-size: clamp(9px, 1.8vh, 12px);
+  letter-spacing: 0.04em;
+}
+
+.diamond.fill {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.diamond .pad-btn {
+  position: absolute;
+  width: 38%;
+  aspect-ratio: 1;
+  height: auto;
+  border-radius: 50%;
+  font-size: clamp(11px, 2.4vh, 17px);
+}
+
+.diamond-n {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.diamond-s {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.diamond-w {
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.diamond-e {
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.dpad-arrow {
+  font-size: 0.85em;
+  line-height: 1;
+}
+
+.stick-fill {
+  width: 100%;
+  height: 100%;
+}
+
+.analog-stick {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid #8ea0e8;
+  background: transparent;
+}
+
+.analog-stick.disabled {
+  opacity: 0.45;
+}
+
+.analog-knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 44%;
+  height: 44%;
+  border-radius: 50%;
+  background: #9eb0ff;
+  border: 1px solid #c4ceff;
+}
+
+.touchpad.fill {
+  width: 100%;
+  height: 100%;
+  border: 1.5px solid #8ea0e8;
+  border-radius: 10px;
+  background: transparent;
+}
+
+.guide-fill {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4%;
+}
+
+.guide-fill .logo-btn {
+  flex: 1;
+  max-height: 70%;
+  aspect-ratio: 1;
+  width: auto;
+}
+
+.guide-label {
+  font-size: clamp(8px, 1.6vh, 11px);
+  opacity: 0.55;
+  border: 1px solid #666;
+  border-radius: 10px;
+  padding: 1px 7px;
+}
+
+.gamepad-shell.is-editing .pad-control.editing:active {
+  outline-color: #fff;
 }
 
 .stick-area {
