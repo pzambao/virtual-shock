@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; script-src 'self'"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Virtual Shock</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Virtual Shock</h1>
+      <p class="subtitle">Host local — controle pelo celular</p>
+
+      <section class="card">
+        <h2>Conexão</h2>
+        <p><span class="label">Status</span> <strong id="status">—</strong></p>
+        <p><span class="label">Código</span> <strong id="code">------</strong></p>
+        <p><span class="label">Porta</span> <strong id="port">—</strong></p>
+        <p><span class="label">IPs</span> <strong id="ips">—</strong></p>
+        <p class="hint">
+          No celular, abra <code id="url">http://IP:porta/</code> e digite o
+          código.
+        </p>
+        <button id="rotate" type="button">Gerar novo código</button>
+      </section>
+
+      <section class="card">
+        <h2>QR Code</h2>
+        <img id="qr" alt="QR Code de conexão" hidden />
+        <p id="qr-fallback" class="hint">QR indisponível</p>
+      </section>
+
+      <section class="card notes">
+        <h2>Notas</h2>
+        <ul>
+          <li>Celular e PC na mesma Wi‑Fi.</li>
+          <li>Libere a porta no firewall do Windows se necessário.</li>
+          <li>Fora do Windows, teclas são apenas logadas (stub).</li>
+        </ul>
+      </section>
+    </main>
+    <script src="./renderer.js"></script>
+  </body>
+</html>

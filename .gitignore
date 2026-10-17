@@ -1,0 +1,17 @@
+node_modules/
+dist/
+dist-mobile/
+out/
+release/
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+*.tsbuildinfo
+.vite/
+coverage/
+apps/desktop/dist-mobile/
+apps/desktop/release/
+# materialized by prepare-pack for electron-builder
+apps/desktop/node_modules/@virtual-shock/

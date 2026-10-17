@@ -1,0 +1,114 @@
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  user-select: none;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  background: #111;
+  color: #eee;
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  overscroll-behavior: none;
+}
+
+.app {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  gap: 12px;
+}
+
+.status {
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.connect-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 360px;
+}
+
+.connect-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.connect-form input {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #444;
+  border-radius: 6px;
+  background: #1a1a1a;
+  color: #fff;
+  touch-action: manipulation;
+}
+
+.connect-form button,
+.secondary-btn {
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  background: #2d6cdf;
+  color: #fff;
+  cursor: pointer;
+}
+
+.secondary-btn {
+  background: #333;
+}
+
+.error {
+  color: #ff7b7b;
+  font-size: 13px;
+}
+
+.controller {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  flex: 1;
+  align-content: start;
+}
+
+.control-btn {
+  min-height: 72px;
+  border: 1px solid #444;
+  border-radius: 10px;
+  background: #1c1c1c;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.control-btn.pressed {
+  background: #2d6cdf;
+  border-color: #2d6cdf;
+}
+
+.control-btn.wide {
+  grid-column: span 2;
+}

@@ -1,0 +1,31 @@
+{
+  "name": "virtual-shock",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Speed Controller — controle de PC pelo celular (MVP)",
+  "scripts": {
+    "dev:shared": "pnpm --filter @virtual-shock/shared build --watch",
+    "dev:mobile": "pnpm --filter @virtual-shock/mobile dev",
+    "dev:desktop": "pnpm --filter @virtual-shock/desktop dev",
+    "dev": "pnpm --filter @virtual-shock/shared build && pnpm --filter @virtual-shock/desktop dev",
+    "build:shared": "pnpm --filter @virtual-shock/shared build",
+    "build:mobile": "pnpm --filter @virtual-shock/mobile build",
+    "build:desktop": "pnpm --filter @virtual-shock/desktop build",
+    "build": "pnpm build:shared && pnpm build:mobile && pnpm --filter @virtual-shock/desktop prepare-mobile && pnpm build:desktop",
+    "test": "pnpm --filter @virtual-shock/shared test",
+    "smoke": "pnpm build:shared && pnpm build:mobile && pnpm --filter @virtual-shock/desktop prepare-mobile && pnpm build:desktop && node apps/desktop/scripts/smoke-ws.mjs",
+    "pack:win": "pnpm build && pnpm --filter @virtual-shock/desktop pack:win",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@10.33.0",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "electron",
+      "esbuild",
+      "koffi"
+    ]
+  }
+}
