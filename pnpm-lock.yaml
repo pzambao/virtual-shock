@@ -41,6 +41,9 @@ importers:
       electron-builder:
         specifier: ^25.1.8
         version: 25.1.8(electron-builder-squirrel-windows@25.1.8)
+      node-addon-api:
+        specifier: 1.7.2
+        version: 1.7.2
       typescript:
         specifier: ^5.8.2
         version: 5.9.3
@@ -3992,8 +3995,7 @@ snapshots:
     dependencies:
       semver: 7.8.5
 
-  node-addon-api@1.7.2:
-    optional: true
+  node-addon-api@1.7.2: {}
 
   node-api-version@0.2.1:
     dependencies:
