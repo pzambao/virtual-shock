@@ -5,6 +5,7 @@ import {
   type ClientToServerMessage,
   type ServerToClientMessage,
   type AllowedKey,
+  type StickId,
 } from "@virtual-shock/shared";
 
 export type ConnectionStatus =
@@ -119,6 +120,19 @@ export class SessionClient {
       return;
     }
     this.send({ type: "key_up", key, sessionId: this.sessionId });
+  }
+
+  stickMove(stick: StickId, x: number, y: number): void {
+    if (!this.sessionId) {
+      return;
+    }
+    this.send({
+      type: "stick_move",
+      sessionId: this.sessionId,
+      stick,
+      x,
+      y,
+    });
   }
 
   private send(message: ClientToServerMessage): void {

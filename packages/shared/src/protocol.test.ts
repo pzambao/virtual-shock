@@ -62,4 +62,51 @@ describe("parseProtocolMessage", () => {
     );
     assert.deepEqual(ping, { type: "ping", ts: 42 });
   });
+
+  it("parses stick_move within range", () => {
+    const ok = parseProtocolMessage(
+      serializeMessage({
+        type: "stick_move",
+        sessionId: "s1",
+        stick: "left",
+        x: 0.5,
+        y: -0.25,
+      }),
+    );
+    assert.deepEqual(ok, {
+      type: "stick_move",
+      sessionId: "s1",
+      stick: "left",
+      x: 0.5,
+      y: -0.25,
+    });
+  });
+
+  it("rejects stick_move out of range or unknown stick", () => {
+    assert.equal(
+      parseProtocolMessage(
+        JSON.stringify({
+          type: "stick_move",
+          sessionId: "s1",
+          stick: "left",
+          x: 1.5,
+          y: 0,
+        }),
+      ),
+      null,
+    );
+    assert.equal(
+      parseProtocolMessage(
+        JSON.stringify({
+          type: "stick_move",
+          sessionId: "s1",
+          stick: "right",
+          x: 0,
+          y: 0,
+        }),
+      ),
+      null,
+    );
+  });
 });
+

@@ -1,5 +1,5 @@
 /**
- * Smoke test: HTTP + WS pairing + key events (uses stub keyboard on non-Windows).
+ * Smoke test: HTTP + WS pairing + key/stick events (stubs on non-Windows).
  * Run after: pnpm build:shared && pnpm build:desktop && prepare-mobile
  */
 import { dirname, join } from "node:path";
@@ -18,6 +18,8 @@ const PORT = 8799;
 const CODE = "424242";
 
 const input = new InputService();
+input.connectGamepad();
+
 const server = new SessionServer({
   input,
   staticRoot: join(__dirname, "../dist-mobile"),
@@ -30,7 +32,10 @@ const ws = new WebSocket(`ws://127.0.0.1:${PORT}`);
 
 function onceMessage(predicate, timeoutMs = 3000) {
   return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error("timeout waiting message")), timeoutMs);
+    const timer = setTimeout(
+      () => reject(new Error("timeout waiting message")),
+      timeoutMs,
+    );
     const onMessage = (data) => {
       const msg = parseProtocolMessage(String(data));
       if (msg && predicate(msg)) {
@@ -66,6 +71,15 @@ try {
   const sessionId = ack.sessionId;
   ws.send(serializeMessage({ type: "key_down", key: "KeyA", sessionId }));
   ws.send(serializeMessage({ type: "key_down", key: "KeyW", sessionId }));
+  ws.send(
+    serializeMessage({
+      type: "stick_move",
+      sessionId,
+      stick: "left",
+      x: 0.5,
+      y: -0.25,
+    }),
+  );
   await new Promise((r) => setTimeout(r, 50));
   if (input.getPressed().sort().join(",") !== "KeyA,KeyW") {
     throw new Error(`expected KeyA,KeyW pressed, got ${input.getPressed()}`);
@@ -84,6 +98,7 @@ try {
 
   console.log("smoke-ws OK");
 } finally {
+  input.dispose();
   await server.stop();
   process.exit(0);
 }
