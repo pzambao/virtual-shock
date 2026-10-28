@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import type { PadButton as PadButtonId } from "@virtual-shock/shared";
+import { usePadSlide } from "../hooks/usePadSlide";
 import {
   DEFAULT_PAD_LAYOUT,
   loadPadLayout,
@@ -8,9 +9,10 @@ import {
   type PadLayoutMap,
   type PadRect,
 } from "../layout/padLayout";
+import { loadPadPrefs, savePadPrefs } from "../layout/padPrefs";
 import { AnalogStick } from "./AnalogStick";
 import { DraggableControl } from "./DraggableControl";
-import { PadButton } from "./PadButton";
+import { ButtonSlideContext, PadButton } from "./PadButton";
 
 interface GamepadLayoutProps {
   pressed: Partial<Record<PadButtonId, boolean>>;
@@ -36,6 +38,9 @@ export function GamepadLayout({
 }: GamepadLayoutProps) {
   const [layout, setLayout] = useState<PadLayoutMap>(() => loadPadLayout());
   const [editMode, setEditMode] = useState(false);
+  const [slideButtons, setSlideButtons] = useState(
+    () => loadPadPrefs().slideButtons,
+  );
 
   const updateRect = useCallback((id: PadControlId, rect: PadRect) => {
     setLayout((prev) => {
@@ -53,9 +58,20 @@ export function GamepadLayout({
 
   const playDown = editMode ? () => undefined : onPadDown;
   const playUp = editMode ? () => undefined : onPadUp;
+  const slideEnabled = slideButtons && !editMode;
+  const slideHandlers = usePadSlide(slideEnabled, playDown, playUp);
+
+  const toggleSlideButtons = () => {
+    setSlideButtons((prev) => {
+      const next = !prev;
+      savePadPrefs({ slideButtons: next });
+      return next;
+    });
+  };
 
   return (
-    <div className={`gamepad-shell${editMode ? " is-editing" : ""}`}>
+    <ButtonSlideContext.Provider value={slideEnabled}>
+      <div className={`gamepad-shell${editMode ? " is-editing" : ""}`}>
       <div className="pad-toolbar">
         <button
           type="button"
@@ -65,9 +81,18 @@ export function GamepadLayout({
           {editMode ? "Concluir" : "Customizar"}
         </button>
         {editMode ? (
-          <button type="button" className="toolbar-btn" onClick={resetLayout}>
-            Resetar
-          </button>
+          <>
+            <button type="button" className="toolbar-btn" onClick={resetLayout}>
+              Resetar
+            </button>
+            <button
+              type="button"
+              className={`toolbar-btn${slideButtons ? " active" : ""}`}
+              onClick={toggleSlideButtons}
+            >
+              Deslizar entre botões
+            </button>
+          </>
         ) : null}
         <button type="button" className="toolbar-btn ghost" onClick={onDisconnect}>
           Desconectar
@@ -78,10 +103,13 @@ export function GamepadLayout({
         <p className="edit-hint">
           Arraste para mover · canto para redimensionar · setas e YXAB são um
           bloco só
+          {slideButtons
+            ? " · deslize o dedo de um botão ao outro sem soltar"
+            : ""}
         </p>
       ) : null}
 
-      <div className="gamepad-canvas">
+      <div className="gamepad-canvas" {...(slideEnabled ? slideHandlers : {})}>
         <DraggableControl
           id="lt"
           rect={layout.lt}
@@ -121,10 +149,10 @@ export function GamepadLayout({
           label="D-pad"
           onChange={updateRect}
         >
-          <div className="diamond fill">
+          <div className="dpad fill">
             <PadButton
               id="DpadUp"
-              className="diamond-n"
+              className="dpad-n"
               label={<Arrow dir="up" />}
               pressed={Boolean(pressed.DpadUp)}
               onDown={playDown}
@@ -132,15 +160,16 @@ export function GamepadLayout({
             />
             <PadButton
               id="DpadLeft"
-              className="diamond-w"
+              className="dpad-w"
               label={<Arrow dir="left" />}
               pressed={Boolean(pressed.DpadLeft)}
               onDown={playDown}
               onUp={playUp}
             />
+            <div className="dpad-hub" aria-hidden />
             <PadButton
               id="DpadRight"
-              className="diamond-e"
+              className="dpad-e"
               label={<Arrow dir="right" />}
               pressed={Boolean(pressed.DpadRight)}
               onDown={playDown}
@@ -148,7 +177,7 @@ export function GamepadLayout({
             />
             <PadButton
               id="DpadDown"
-              className="diamond-s"
+              className="dpad-s"
               label={<Arrow dir="down" />}
               pressed={Boolean(pressed.DpadDown)}
               onDown={playDown}
@@ -294,28 +323,28 @@ export function GamepadLayout({
           <div className="diamond fill">
             <PadButton
               id="Y"
-              className="diamond-n"
+              className="diamond-n face-y"
               pressed={Boolean(pressed.Y)}
               onDown={playDown}
               onUp={playUp}
             />
             <PadButton
               id="X"
-              className="diamond-w"
+              className="diamond-w face-x"
               pressed={Boolean(pressed.X)}
               onDown={playDown}
               onUp={playUp}
             />
             <PadButton
               id="B"
-              className="diamond-e"
+              className="diamond-e face-b"
               pressed={Boolean(pressed.B)}
               onDown={playDown}
               onUp={playUp}
             />
             <PadButton
               id="A"
-              className="diamond-s"
+              className="diamond-s face-a"
               pressed={Boolean(pressed.A)}
               onDown={playDown}
               onUp={playUp}
@@ -371,6 +400,7 @@ export function GamepadLayout({
           />
         </DraggableControl>
       </div>
-    </div>
+      </div>
+    </ButtonSlideContext.Provider>
   );
 }

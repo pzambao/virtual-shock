@@ -10,6 +10,10 @@ function render(info) {
   document.getElementById("status").textContent = info.clientConnected
     ? `Conectado${info.clientName ? ` (${info.clientName})` : ""}`
     : "Aguardando celular";
+  const statusPill = document.getElementById("status-pill");
+  statusPill.classList.toggle("is-connected", info.clientConnected);
+  statusPill.classList.toggle("is-waiting", !info.clientConnected);
+
   document.getElementById("code").textContent = info.pairingCode;
   document.getElementById("port").textContent = String(info.port);
   document.getElementById("ips").textContent = info.addresses.length
@@ -24,16 +28,21 @@ function render(info) {
     GAMEPAD_LABELS[info.gamepadStatus] ?? info.gamepadStatus ?? "—";
   document.getElementById("gamepad-detail").textContent =
     info.gamepadDetail ?? "";
+  document.getElementById("gamepad-card").dataset.status =
+    info.gamepadStatus ?? "";
 
   const qrEl = document.getElementById("qr");
   const qrFallback = document.getElementById("qr-fallback");
+  const qrWrap = qrEl.parentElement;
   if (info.qrDataUrl) {
     qrEl.src = info.qrDataUrl;
     qrEl.hidden = false;
     qrFallback.hidden = true;
+    qrWrap.classList.add("has-qr");
   } else {
     qrEl.hidden = true;
     qrFallback.hidden = false;
+    qrWrap.classList.remove("has-qr");
   }
 }
 

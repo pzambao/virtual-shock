@@ -1,5 +1,7 @@
-import { useRef, type ReactNode } from "react";
+import { createContext, useContext, useRef, type ReactNode } from "react";
 import type { PadButton as PadButtonId } from "@virtual-shock/shared";
+
+export const ButtonSlideContext = createContext(false);
 
 interface PadButtonProps {
   id: PadButtonId;
@@ -18,6 +20,7 @@ export function PadButton({
   onDown,
   onUp,
 }: PadButtonProps) {
+  const slideMode = useContext(ButtonSlideContext);
   const activePointers = useRef<Set<number>>(new Set());
 
   const releasePointer = (pointerId: number) => {
@@ -33,10 +36,14 @@ export function PadButton({
   return (
     <button
       type="button"
+      data-pad-id={id}
       className={`pad-btn ${className}${pressed ? " pressed" : ""}`}
       onContextMenu={(e) => e.preventDefault()}
       onPointerDown={(e) => {
         e.preventDefault();
+        if (slideMode) {
+          return;
+        }
         e.currentTarget.setPointerCapture(e.pointerId);
         const wasEmpty = activePointers.current.size === 0;
         activePointers.current.add(e.pointerId);

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Virtual Shock">
+  <title>Virtual Shock</title>
+  <rect width="128" height="128" rx="28" fill="#121212" />
+  <g fill="#e08c32">
+    <!-- antenna bolt -->
+    <path d="M68 10 52 38h13L50 66l32-32H67L84 10Z" />
+    <!-- body -->
+    <path d="M24 70c-10 2-16 14-10 28 3 8 12 16 24 16h52c12 0 21-8 24-16 6-14 0-26-10-28-6-1-14 3-18 6H42c-4-3-12-7-18-6Z" />
+  </g>
+  <g fill="none" stroke="#e08c32" stroke-width="4" stroke-linecap="round">
+    <path d="M78 22c7 4 11 10 13 17" />
+    <path d="M84 16c10 5 16 13 19 23" />
+  </g>
+  <!-- analog sticks -->
+  <circle cx="46" cy="82" r="9" fill="#6a3e1c" />
+  <circle cx="46" cy="82" r="4" fill="#121212" />
+  <circle cx="82" cy="82" r="9" fill="#6a3e1c" />
+  <circle cx="82" cy="82" r="4" fill="#121212" />
+  <!-- d-pad -->
+  <path fill="#6a3e1c" d="M40 96h6v-3h3v-6h-3v-3h-6v3h-3v6h3z" />
+  <!-- face buttons -->
+  <circle cx="84" cy="94" r="2.2" fill="#6a3e1c" />
+  <circle cx="90" cy="98" r="2.2" fill="#6a3e1c" />
+  <circle cx="84" cy="102" r="2.2" fill="#6a3e1c" />
+  <circle cx="78" cy="98" r="2.2" fill="#6a3e1c" />
+</svg>

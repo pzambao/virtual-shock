@@ -110,9 +110,10 @@ async function ensureGamepad(input: InputService): Promise<void> {
 
 async function createWindow(): Promise<void> {
   mainWindow = new BrowserWindow({
-    width: 520,
-    height: 720,
+    width: 480,
+    height: 800,
     title: "Virtual Shock",
+    icon: join(__dirname, "../renderer/logo.png"),
     webPreferences: {
       preload: resolvePreload(),
       contextIsolation: true,

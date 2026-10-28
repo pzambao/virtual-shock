@@ -12,48 +12,67 @@
   </head>
   <body>
     <main>
-      <h1>Virtual Shock</h1>
-      <p class="subtitle">Host local — controle pelo celular</p>
+      <header class="brand">
+        <div class="logo-wrap">
+          <img
+            class="logo"
+            src="./logo.png"
+            width="64"
+            height="64"
+            alt="Virtual Shock"
+          />
+        </div>
+        <h1>Virtual Shock</h1>
+        <p class="subtitle">Host local — controle pelo celular</p>
+      </header>
 
-      <section class="card">
-        <h2>Conexão</h2>
-        <p><span class="label">Status</span> <strong id="status">—</strong></p>
-        <p><span class="label">Código</span> <strong id="code">------</strong></p>
-        <p><span class="label">Porta</span> <strong id="port">—</strong></p>
-        <p><span class="label">IPs</span> <strong id="ips">—</strong></p>
-        <p class="hint">
-          No celular (landscape), abra <code id="url">http://IP:porta/</code> e
-          digite o código.
+      <section class="card card-hero">
+        <div class="qr-wrap">
+          <img id="qr" alt="QR Code de conexão" hidden />
+          <p id="qr-fallback" class="hint">QR indisponível</p>
+        </div>
+
+        <p class="code-label">Código de pareamento</p>
+        <p id="code" class="code-value">------</p>
+
+        <div id="status-pill" class="status-pill is-waiting">
+          <span class="dot" aria-hidden="true"></span>
+          <strong id="status">—</strong>
+        </div>
+
+        <p class="hint url-hint">
+          No celular (horizontal), abra
+          <code id="url">http://IP:porta/</code>
         </p>
+
         <button id="rotate" type="button">Gerar novo código</button>
       </section>
 
-      <section class="card">
-        <h2>Gamepad virtual</h2>
-        <p>
-          <span class="label">Estado</span>
+      <section class="card card-gamepad" id="gamepad-card">
+        <div class="gamepad-head">
+          <span class="label">Gamepad virtual</span>
           <strong id="gamepad-status">—</strong>
-        </p>
+        </div>
         <p id="gamepad-detail" class="hint"></p>
-        <button id="retry-gamepad" type="button">
+        <button id="retry-gamepad" type="button" class="btn-ghost">
           Instalar / reconectar ViGEm
         </button>
       </section>
 
-      <section class="card">
-        <h2>QR Code</h2>
-        <img id="qr" alt="QR Code de conexão" hidden />
-        <p id="qr-fallback" class="hint">QR indisponível</p>
+      <section class="card card-meta">
+        <div class="stat">
+          <span class="label">Porta</span>
+          <strong id="port">—</strong>
+        </div>
+        <div class="stat">
+          <span class="label">IPs</span>
+          <strong id="ips">—</strong>
+        </div>
       </section>
 
-      <section class="card notes">
-        <h2>Notas</h2>
-        <ul>
-          <li>Celular e PC na mesma Wi‑Fi; use o celular na horizontal.</li>
-          <li>Joystick/botões usam ViGEmBus (Xbox 360 virtual).</li>
-          <li>Na 1ª vez o Windows pode pedir UAC; reinício em geral não é preciso.</li>
-        </ul>
-      </section>
+      <p class="notes">
+        Mesma Wi‑Fi · celular na horizontal · ViGEmBus na 1ª vez (UAC)
+      </p>
     </main>
     <script src="./renderer.js"></script>
   </body>
