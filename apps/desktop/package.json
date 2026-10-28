@@ -57,7 +57,8 @@
       "**/node_modules/vigemclient/**/*"
     ],
     "win": {
-      "signAndEditExecutable": false,
+      "icon": "resources/icon.ico",
+      "signAndEditExecutable": true,
       "target": [
         {
           "target": "portable",

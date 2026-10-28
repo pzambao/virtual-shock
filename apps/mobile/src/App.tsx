@@ -12,6 +12,28 @@ import {
   type ConnectionStatus,
 } from "./ws/client";
 
+const STATUS_LABELS: Record<ConnectionStatus, string> = {
+  idle: "Aguardando",
+  connecting: "Conectando…",
+  connected: "Conectado",
+  rejected: "Recusado",
+  disconnected: "Desconectado",
+  error: "Erro",
+};
+
+function statusPillClass(status: ConnectionStatus): string {
+  if (status === "connecting") {
+    return "is-waiting is-connecting";
+  }
+  if (status === "rejected" || status === "error") {
+    return "is-error";
+  }
+  if (status === "disconnected") {
+    return "is-disconnected";
+  }
+  return "is-waiting";
+}
+
 function initialHost(): string {
   return loadConnectionPrefs().host?.trim() || defaultHostFromLocation();
 }
@@ -90,53 +112,83 @@ export function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount
   }, []);
 
+  const connecting = status === "connecting";
+
   return (
-    <div className={`app${connected ? " app-playing" : ""}`}>
+    <div className={`app${connected ? " app-playing" : " app-connect"}`}>
       {!connected ? (
-        <>
-          <div className="status-bar">
-            Status: <strong>{status}</strong>
-            {detail ? ` — ${detail}` : ""}
-          </div>
-          <div className="connect-screen">
-            <div className="connect-form">
-              <label>
-                Host (IP:porta)
-                <input
-                  value={host}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setHost(value);
-                    persistPrefs(value, pairingCode);
-                  }}
-                  autoCapitalize="off"
-                  autoCorrect="off"
-                  spellCheck={false}
-                />
-              </label>
-              <label>
-                Código de pareamento
-                <input
-                  value={pairingCode}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setPairingCode(value);
-                    persistPrefs(host, value);
-                  }}
-                  inputMode="numeric"
-                  maxLength={6}
-                  placeholder="000000"
-                />
-              </label>
-              <button type="button" onClick={() => handleConnect()}>
-                Conectar
-              </button>
-              {status === "rejected" || status === "error" ? (
-                <div className="error">{detail ?? "Falha na conexão"}</div>
-              ) : null}
+        <div className="connect-screen">
+          <header className="brand">
+            <div className="logo-wrap">
+              <img
+                className="logo"
+                src="/logo.png"
+                width={64}
+                height={64}
+                alt="Virtual Shock"
+              />
             </div>
-          </div>
-        </>
+            <h1>Virtual Shock</h1>
+            <p className="subtitle">Controle o PC pelo celular</p>
+          </header>
+
+          <form
+            className="card connect-card"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!connecting) {
+                handleConnect();
+              }
+            }}
+          >
+            <div className={`status-pill ${statusPillClass(status)}`}>
+              <span className="dot" aria-hidden="true" />
+              <strong>{STATUS_LABELS[status]}</strong>
+            </div>
+
+            <label>
+              <span className="field-label">Host (IP:porta)</span>
+              <input
+                value={host}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setHost(value);
+                  persistPrefs(value, pairingCode);
+                }}
+                autoCapitalize="off"
+                autoCorrect="off"
+                spellCheck={false}
+                autoComplete="off"
+                enterKeyHint="next"
+              />
+            </label>
+            <label>
+              <span className="field-label">Código de pareamento</span>
+              <input
+                className="code-input"
+                value={pairingCode}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, "").slice(0, 6);
+                  setPairingCode(value);
+                  persistPrefs(host, value);
+                }}
+                inputMode="numeric"
+                maxLength={6}
+                placeholder="000000"
+                autoComplete="one-time-code"
+                enterKeyHint="go"
+              />
+            </label>
+            <button type="submit" disabled={connecting}>
+              {connecting ? "Conectando…" : "Conectar"}
+            </button>
+            {status === "rejected" || status === "error" ? (
+              <p className="error">{detail ?? "Falha na conexão"}</p>
+            ) : null}
+          </form>
+
+          <p className="notes">Mesma Wi‑Fi · celular na horizontal</p>
+        </div>
       ) : (
         <GamepadLayout
           pressed={pressed}
