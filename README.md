@@ -10,7 +10,7 @@ Ainda não há relay na internet: celular e PC precisam estar na mesma Wi-Fi.
 
 Windows 10 ou 11, 64 bits. Não precisa de Node.js nem de terminal.
 
-1. Baixe [VirtualShock-0.1.0-x64.exe](https://github.com/pzambao/virtual-shock/releases/download/v0.1.0/VirtualShock-0.1.0-x64.exe) na [página de releases](https://github.com/pzambao/virtual-shock/releases/latest).
+1. Baixe [VirtualShock-0.2.0-x64.exe](https://github.com/pzambao/virtual-shock/releases/download/v0.2.0/VirtualShock-0.2.0-x64.exe) na [página de releases](https://github.com/pzambao/virtual-shock/releases/latest).
 2. Abra o arquivo. Se o Windows mostrar “Windows protegeu o seu PC”, clique em **Mais informações** e depois em **Executar assim mesmo**. O executável ainda não é assinado.
 3. Na primeira abertura, aceite o pedido de administrador. O app instala o driver ViGEmBus, que cria o controle Xbox virtual. Em geral não é preciso reiniciar o PC. Se cancelar, use **Instalar / reconectar ViGEm** dentro do app.
 4. Deixe o Virtual Shock aberto. A janela mostra os IPs, a porta `8787`, o código e o status do gamepad. Há também um QR code.

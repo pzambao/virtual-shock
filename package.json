@@ -1,7 +1,7 @@
 {
   "name": "virtual-shock",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Speed Controller — controle de PC pelo celular (MVP)",
   "scripts": {
     "dev:shared": "pnpm --filter @virtual-shock/shared build --watch",
